@@ -56,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
   bool minimized = true;
   bool cacheOnComplex = true;
 
+  double size = 200;
+  double count = 20;
+
   void _switchSi() => setState(() => si = !si);
 
   void _switchMinimized() => setState(() => minimized = !minimized);
@@ -80,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Stack(
           children: [
             ListView.builder(
-              itemCount: 20,
+              itemCount: count.round(),
               itemBuilder: (context, index) {
                 return RepaintBoundary(
                   child: FutureBuilder<ScalableImage>(
@@ -100,14 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                     builder: (context, snap) {
                       return SizedBox(
-                        height: 224,
+                        height: size + 24,
                         child: Card(
                           child: Column(
                             children: [
                               Text('Item $index'),
                               if (snap.hasData)
                                 SizedBox(
-                                  height: 200,
+                                  height: size,
                                   child: ScalableImageWidget(
                                     si: snap.requireData,
                                     isComplex: cacheOnComplex,
@@ -136,38 +139,76 @@ class _MyHomePageState extends State<MyHomePage> {
                         blurRadius: 40,
                       )
                     ]),
-                child: Row(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CupertinoSwitch(
-                            value: si, onChanged: (_) => _switchSi()),
-                        const SizedBox(width: 8),
-                        const Text('Jovial Binary'),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CupertinoSwitch(
+                                value: si, onChanged: (_) => _switchSi()),
+                            const SizedBox(width: 8),
+                            const Text('Jovial Binary'),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CupertinoSwitch(
+                                value: minimized,
+                                onChanged: (_) => _switchMinimized()),
+                            const SizedBox(width: 8),
+                            const Text('SVGO minimized'),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CupertinoSwitch(
+                                value: cacheOnComplex,
+                                onChanged: (_) => _switchCacheOnComplex()),
+                            const SizedBox(width: 8),
+                            const Text('Paint Cache'),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(width: 16),
                     Row(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CupertinoSwitch(
-                            value: minimized,
-                            onChanged: (_) => _switchMinimized()),
-                        const SizedBox(width: 8),
-                        const Text('SVGO minimized'),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CupertinoSwitch(
-                            value: cacheOnComplex,
-                            onChanged: (_) => _switchCacheOnComplex()),
-                        const SizedBox(width: 8),
-                        const Text('Paint Cache'),
+                        Column(
+                          children: [
+                            Slider(
+                              value: count,
+                              max: 100,
+                              divisions: 20,
+                              label: count.round().toString(),
+                              onChanged: (double value) =>
+                                  setState(() => count = value),
+                            ),
+                            Text('Count: ${count.round().toString()}'),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Slider(
+                              value: size,
+                              max: MediaQuery.of(context).size.width - 200,
+                              min: 100,
+                              divisions: 20,
+                              label: size.round().toString(),
+                              onChanged: (double value) =>
+                                  setState(() => size = value),
+                            ),
+                            Text('Image Size: ${size.round().toString()}'),
+                          ],
+                        )
                       ],
                     ),
                   ],
